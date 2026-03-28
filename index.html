@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise do Diagnóstico — Resposta ao Consultor | Live Consultoria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #06192a;
+            --card-bg: #0A243D;
+            --accent-color: #00e800;
+            --accent-glow: rgba(0, 232, 0, 0.15);
+            --text-primary: #ffffff;
+            --text-muted: #cccccc;
+            --text-dim: #8899aa;
+            --font-primary: 'Poppins', sans-serif;
+            --font-secondary: 'Merriweather', serif;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --warning: #ffa502;
+            --danger: #ff4757;
+            --info: #3498db;
+            --success: #00e800;
+            --space-sm: 1.5rem;
+            --space-md: 2rem;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--primary-bg);
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 var(--space-md); }
+
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* HEADER */
+        header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(6, 25, 42, 0.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color); padding: 0.8rem 0;
+        }
+        header .container { display: flex; justify-content: space-between; align-items: center; }
+        header img { height: 35px; opacity: 0.9; }
+        .header-info { text-align: right; font-size: 0.8rem; color: var(--text-dim); }
+        .header-info span { color: var(--accent-color); font-weight: 600; }
+
+        /* HERO */
+        .hero {
+            padding: 120px 0 60px; text-align: center;
+            background: linear-gradient(180deg, rgba(0, 232, 0, 0.04) 0%, transparent 100%);
+        }
+        .hero h1 {
+            font-family: var(--font-secondary); font-size: 2.4rem; font-weight: 700; margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero .subtitle { font-size: 1rem; color: var(--text-muted); max-width: 820px; margin: 0 auto 2rem; }
+        .meta-badges { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            padding: 0.6rem 1.2rem; border-radius: 10px; font-size: 0.82rem;
+        }
+
+        /* SECTION */
+        section { margin-bottom: 3.5rem; }
+        .section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.75rem; }
+        .section-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; padding-left: 44px; }
+        .num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; background: var(--accent-glow);
+            color: var(--accent-color); border-radius: 8px; font-size: 0.85rem;
+            font-weight: 700; border: 1px solid rgba(0, 232, 0, 0.2); flex-shrink: 0;
+        }
+        .num-red {
+            background: rgba(255,71,87,0.15); color: var(--danger);
+            border-color: rgba(255,71,87,0.3);
+        }
+        .num-yellow {
+            background: rgba(255,165,2,0.15); color: var(--warning);
+            border-color: rgba(255,165,2,0.3);
+        }
+        .num-blue {
+            background: rgba(52,152,219,0.15); color: var(--info);
+            border-color: rgba(52,152,219,0.3);
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1.5rem; margin-bottom: var(--space-sm);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .card:hover { transform: translateY(-2px); border-color: rgba(0, 232, 0, 0.3); }
+        .card h3 { font-size: 1rem; margin-bottom: 0.75rem; }
+        .card p, .card li { color: var(--text-muted); font-size: 0.87rem; }
+
+        /* GRIDS */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-sm); }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+
+        /* STAT CARD */
+        .stat-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1.5rem; text-align: center;
+        }
+        .stat-card .stat-num { font-size: 2.2rem; font-weight: 700; color: var(--accent-color); }
+        .stat-card .stat-num.red { color: var(--danger); }
+        .stat-card .stat-num.yellow { color: var(--warning); }
+        .stat-card .stat-num.blue { color: var(--info); }
+        .stat-card .stat-label { color: var(--text-dim); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.25rem; }
+
+        /* STATUS BADGES */
+        .status { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.7rem; border-radius: 12px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+        .status-success { background: rgba(0,232,0,0.15); color: var(--success); }
+        .status-warning { background: rgba(255,165,2,0.15); color: var(--warning); }
+        .status-danger { background: rgba(255,71,87,0.15); color: var(--danger); }
+        .status-info { background: rgba(52,152,219,0.15); color: var(--info); }
+
+        /* REFUTATION CARD */
+        .refut-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem;
+            border-left: 4px solid var(--danger);
+            position: relative; overflow: hidden;
+        }
+        .refut-card::after {
+            content: '✗'; position: absolute; right: 1.5rem; top: 1.2rem;
+            font-size: 2rem; font-weight: 900; color: rgba(255,71,87,0.12);
+            font-family: sans-serif;
+        }
+        .refut-card .critic-label {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--danger); margin-bottom: 0.4rem; opacity: 0.8;
+        }
+        .refut-card h3 { font-size: 1rem; margin-bottom: 0.6rem; color: var(--text-primary); }
+        .refut-card .critic-text {
+            background: rgba(255,71,87,0.06); border: 1px solid rgba(255,71,87,0.18);
+            border-radius: 8px; padding: 0.9rem 1.1rem; font-size: 0.85rem;
+            color: var(--text-muted); margin-bottom: 0.9rem; font-style: italic;
+        }
+        .refut-card .critic-text::before { content: '"'; color: var(--danger); font-size: 1.2rem; font-style: normal; }
+        .refut-card .critic-text::after { content: '"'; color: var(--danger); font-size: 1.2rem; font-style: normal; }
+        .refut-card .evidence-box {
+            background: rgba(0,232,0,0.06); border: 1px solid rgba(0,232,0,0.2);
+            border-radius: 8px; padding: 0.9rem 1.1rem;
+        }
+        .refut-card .evidence-box .ev-label {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--accent-color); margin-bottom: 0.35rem;
+        }
+        .refut-card .evidence-box p { font-size: 0.85rem; color: var(--text-muted); }
+        .refut-card .evidence-box .quote {
+            background: rgba(0,232,0,0.08); border-left: 3px solid var(--accent-color);
+            padding: 0.5rem 0.9rem; margin-top: 0.6rem; border-radius: 4px;
+            font-size: 0.82rem; color: var(--text-primary); font-style: italic;
+        }
+
+        /* VALID CARD */
+        .valid-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem;
+            border-left: 4px solid var(--warning);
+        }
+        .valid-card .priority-tag {
+            display: inline-block; font-size: 0.68rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+            padding: 0.15rem 0.6rem; border-radius: 20px; margin-bottom: 0.6rem;
+        }
+        .priority-high { background: rgba(255,71,87,0.15); color: var(--danger); }
+        .priority-med { background: rgba(255,165,2,0.15); color: var(--warning); }
+        .valid-card h3 { font-size: 1rem; margin-bottom: 0.6rem; color: var(--text-primary); }
+        .valid-card .gap-text { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.65; }
+        .valid-card .rec-box {
+            background: rgba(255,165,2,0.07); border: 1px solid rgba(255,165,2,0.2);
+            border-radius: 8px; padding: 0.9rem 1.1rem;
+        }
+        .valid-card .rec-box .rec-label {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--warning); margin-bottom: 0.35rem;
+        }
+        .valid-card .rec-box p { font-size: 0.85rem; color: var(--text-muted); }
+        .valid-card ul { list-style: none; padding: 0; margin-top: 0.5rem; }
+        .valid-card ul li {
+            font-size: 0.85rem; color: var(--text-muted); padding: 0.3rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04); padding-left: 1.2rem; position: relative;
+        }
+        .valid-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--warning); }
+        .valid-card ul li:last-child { border: none; }
+
+        /* CONTEXT CARD */
+        .context-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem;
+            border-left: 4px solid var(--info);
+        }
+        .context-card h3 { font-size: 1rem; margin-bottom: 0.6rem; color: var(--text-primary); }
+        .context-card .ctx-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 0.85rem; }
+        .context-card .ctx-box {
+            background: rgba(52,152,219,0.07); border: 1px solid rgba(52,152,219,0.2);
+            border-radius: 8px; padding: 0.9rem 1.1rem;
+        }
+        .context-card .ctx-box .ctx-label {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--info); margin-bottom: 0.35rem;
+        }
+        .context-card .ctx-box p { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* ALERTS */
+        .alert {
+            border-radius: 10px; padding: 1.2rem 1.5rem; margin-bottom: var(--space-sm);
+            display: flex; align-items: flex-start; gap: 1rem;
+        }
+        .alert-warning { background: rgba(255,165,2,0.08); border: 1px solid rgba(255,165,2,0.25); }
+        .alert-info { background: rgba(52,152,219,0.08); border: 1px solid rgba(52,152,219,0.25); }
+        .alert-success { background: rgba(0,232,0,0.06); border: 1px solid rgba(0,232,0,0.18); }
+        .alert .alert-icon { font-size: 1.4rem; flex-shrink: 0; padding-top: 2px; }
+        .alert .alert-text { color: var(--text-muted); font-size: 0.87rem; line-height: 1.6; }
+        .alert .alert-text strong { color: var(--text-primary); }
+
+        /* TABLE */
+        .table-wrapper { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        thead tr { background: rgba(255,255,255,0.04); }
+        th { text-align: left; padding: 1rem 1.2rem; color: var(--accent-color); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 0.9rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); vertical-align: middle; }
+        td strong { color: var(--text-primary); }
+        tbody tr:last-child td { border: none; }
+        tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* VERDICT FINAL */
+        .verdict-box {
+            background: rgba(0,232,0,0.06); border: 1px solid rgba(0,232,0,0.2);
+            border-radius: 14px; padding: 2rem; text-align: center; margin-top: 2rem;
+        }
+        .verdict-box h2 { font-size: 1.3rem; margin-bottom: 0.75rem; color: var(--accent-color); }
+        .verdict-box p { color: var(--text-muted); font-size: 0.9rem; max-width: 700px; margin: 0 auto; line-height: 1.7; }
+
+        /* FOOTER */
+        footer { text-align: center; padding: 3rem 2rem; border-top: 1px solid var(--border-color); margin-top: 4rem; }
+        footer p { color: var(--text-dim); font-size: 0.8rem; }
+        footer .dev-credit { opacity: 0.4; font-style: italic; font-size: 0.7rem; margin-top: 0.5rem; }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.8rem; }
+            .hero { padding: 100px 0 40px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <img src="https://raw.githubusercontent.com/Clebito2/ConsultoriaLive/main/Logo%20live%20oficial-21.png" alt="Live Consultoria">
+            <div class="header-info">
+                <div><span>Projeto Lokkoo</span> — Resposta Técnica</div>
+                <div>Análise do Diagnóstico Externo</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="hero fade-in">
+        <div class="container">
+            <h1>Análise do Diagnóstico Externo<br>Projeto Lokkoo</h1>
+            <p class="subtitle">Confrontação técnica e estratégica dos apontamentos do consultor com o alinhamento original elaborado pela <strong>Live Consultoria</strong>. Identificação de pontos já cobertos, lacunas genuínas e contexto ausente no diagnóstico.</p>
+            <div class="meta-badges">
+                <div class="badge"><span>📅</span> Março de 2026</div>
+                <div class="badge"><span>🔍</span> Consultor: Luiz Portal</div>
+                <div class="badge"><span>📄</span> Base: Cronograma + BMC Top Usados</div>
+                <div class="badge"><span>🎯</span> Documento de Resposta</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- RESUMO EXECUTIVO -->
+        <section class="fade-in">
+            <div class="grid-4">
+                <div class="stat-card">
+                    <div class="stat-num red">5</div>
+                    <div class="stat-label">Pontos a Refutar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num yellow">4</div>
+                    <div class="stat-label">Lacunas Reais</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num blue">3</div>
+                    <div class="stat-label">Contextos Ausentes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num">1</div>
+                    <div class="stat-label">Cronograma Original</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTEXTO DA ANÁLISE -->
+        <section class="fade-in">
+            <div class="section-title"><span class="num num-blue"><i class="fa-solid fa-circle-info" style="font-size:0.8rem"></i></span> Contexto da Análise</div>
+            <p class="section-desc">O que o consultor tinha disponível e o que é necessário saber para avaliar os apontamentos.</p>
+
+            <div class="alert alert-warning">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-text">
+                    <strong>Limitação do Diagnóstico:</strong> O consultor Luiz Portal analisou exclusivamente o <strong>arquivo CSV do cronograma de 6 meses</strong> do Projeto Lokkoo. Ele não teve acesso ao <strong>Business Model Canvas do Top Usados</strong>, documento-mãe onde o alinhamento estratégico completo foi construído — incluindo perfil do cliente, proposta de valor, modelo de receita e os riscos comportamentais identificados. Parte das críticas perde fundamento quando confrontada com esse contexto.
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card" style="border-left: 3px solid var(--danger);">
+                    <h3 style="color: var(--danger);"><i class="fa-solid fa-file-csv"></i> O que o consultor analisou</h3>
+                    <p>Apenas o cronograma de 6 meses (CSV) — uma visão operacional e sequencial das frentes de atuação, sem o contexto estratégico, de negócio e comportamental que fundamenta cada decisão.</p>
+                </div>
+                <div class="card" style="border-left: 3px solid var(--success);">
+                    <h3 style="color: var(--success);"><i class="fa-solid fa-layer-group"></i> Base real do alinhamento</h3>
+                    <p>Cronograma de 6 meses <strong>+</strong> Business Model Canvas do Top Usados <strong>+</strong> Diagnóstico comportamental do cliente Eduardo <strong>+</strong> Deliberações das sessões de onboarding com todos os envolvidos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORIA 1: REFUTAÇÕES -->
+        <section class="fade-in">
+            <div class="section-title"><span class="num num-red"><i class="fa-solid fa-xmark" style="font-size:0.8rem"></i></span> Categoria 1 — Pontos Já Cobertos no Plano</div>
+            <p class="section-desc">Críticas que revelam leitura incompleta do próprio documento analisado. Cada ponto possui evidência textual direta no cronograma.</p>
+
+            <!-- 1.1 -->
+            <div class="refut-card">
+                <div class="critic-label">Apontamento 1.1 — Pontos Cegos</div>
+                <h3>Ausência de fase Beta Fechado / MVP antes da operação plena</h3>
+                <div class="critic-text">
+                    O planejamento pula da estruturação direta para a "Operação Plena" no Mês 5. Lançar uma plataforma complexa de uma vez para o público geral é perigoso. Falta uma fase de Beta Fechado (MVP) para testar o sistema com usuários reais antes de abrir as portas.
+                </div>
+                <div class="evidence-box">
+                    <div class="ev-label">📌 Evidência no Cronograma — Mês 4</div>
+                    <p>O Mês 4 é intitulado <strong>"Soft Launch"</strong> e prevê explicitamente:</p>
+                    <div class="quote">
+                        "Lançamento Beta Fechado: Convite a 5-10 Lojistas Parceiros" + "Operação real em ambiente controlado (Teste de POPs e ERP)" + "Correção rápida de bugs (UX/UI) reportados pelos lojistas"
+                    </div>
+                    <p style="margin-top: 0.7rem;">O "Conselho Beta Lokkoo" que o consultor propõe como ideia nova <strong>já consta no plano</strong>. O cronograma inclusive especifica o número de participantes (5-10 lojistas) e o objetivo (prova social para o Pitch Deck).</p>
+                </div>
+            </div>
+
+            <!-- 1.2 -->
+            <div class="refut-card">
+                <div class="critic-label">Apontamento 1.2 — Gargalos e Fragilidades</div>
+                <h3>Cronograma em cascata com dependência jurídica bloqueando outras frentes</h3>
+                <div class="critic-text">
+                    O avanço de várias frentes parece depender da finalização da estruturação societária e dos termos pela Dra. Viviane (Meses 1 a 3). Isso cria um gargalo. Frentes como auditoria, desenho de processos e escolha de sistemas devem rodar em paralelo, sem esperar a burocracia contratual.
+                </div>
+                <div class="evidence-box">
+                    <div class="ev-label">📌 Evidência no Cronograma — Cabeçalho da Coluna</div>
+                    <p>A segunda coluna do CSV é literalmente denominada:</p>
+                    <div class="quote">
+                        "Frentes de Atuação <strong>(A decorrer em paralelo)</strong>"
+                    </div>
+                    <p style="margin-top: 0.7rem;">O Mês 1 já executa simultaneamente: <strong>Auditoria Técnica do Código</strong> + <strong>Estruturação Societária</strong> + <strong>Homologação do ERP/CRM</strong>. A metodologia de execução paralela é a premissa do documento, não uma sugestão de melhoria.</p>
+                </div>
+            </div>
+
+            <!-- 1.3 -->
+            <div class="refut-card">
+                <div class="critic-label">Apontamento 1.3 — Gargalos e Fragilidades</div>
+                <h3>Decisão de ERP/CRM desconectada da engenharia — TI sem poder de veto</h3>
+                <div class="critic-text">
+                    Colocar a escolha do ERP e CRM como uma deliberação apenas executiva é um risco. Se a diretoria aprovar um sistema engessado, o custo e o tempo de integração via API podem inviabilizar a operação. A TI deve ter poder de veto nessa escolha.
+                </div>
+                <div class="evidence-box">
+                    <div class="ev-label">📌 Evidência no Cronograma — Mês 1</div>
+                    <p>A atividade do Mês 1 descreve:</p>
+                    <div class="quote">
+                        "Homologação Técnica do ERP/CRM <strong>(Diretoria + TI)</strong>"
+                    </div>
+                    <p style="margin-top: 0.7rem;">A TI está incluída formalmente desde o início como co-responsável pela homologação. O processo não é apenas executivo — ele é tecnicamente validado. O consultor não identificou a especificação de responsáveis nesta atividade.</p>
+                </div>
+            </div>
+
+            <!-- 1.4 -->
+            <div class="refut-card">
+                <div class="critic-label">Apontamento 1.4 — Gargalos e Fragilidades</div>
+                <h3>Tráfego pago sendo ativado prematuramente no Mês 4, antes da validação da retenção</h3>
+                <div class="critic-text">
+                    Alocar o especialista em tráfego pago no Mês 4 sem antes garantir a retenção de usuários é arriscado. Tráfego em plataforma não testada gera cadastros que encontram bugs e nunca mais voltam. O foco inicial deve ser aquisição cirúrgica, não volume de mídia.
+                </div>
+                <div class="evidence-box">
+                    <div class="ev-label">📌 Evidência no Cronograma — Mês 4</div>
+                    <p>A atividade do Mês 4 especifica explicitamente:</p>
+                    <div class="quote">
+                        "Setup das Campanhas de Tráfego Pago <strong>(sem ativar ainda)</strong>"
+                    </div>
+                    <p style="margin-top: 0.7rem;">O Mês 4 é exclusivamente de <strong>preparação</strong>. A ativação real do tráfego pago ocorre apenas no Mês 5 — após validação da plataforma com os lojistas beta. A recomendação do consultor de "empurrar o tráfego para o Mês 5" é literalmente o que o plano já determina.</p>
+                </div>
+            </div>
+
+            <!-- 1.5 -->
+            <div class="refut-card">
+                <div class="critic-label">Apontamento 1.5 — Pontos Cegos</div>
+                <h3>Mapeamento de POPs sem definição da equipe que irá executá-los</h3>
+                <div class="critic-text">
+                    A trilha prevê mapear os POPs de atendimento e moderação, mas não prevê a contratação de quem vai executá-los. Falta definir a equipe de linha de frente (Nível 1 de suporte e analistas de moderação) antes de escalar o tráfego.
+                </div>
+                <div class="evidence-box">
+                    <div class="ev-label">📌 Evidência no Cronograma — Mês 3</div>
+                    <p>O Mês 3 inclui a atividade:</p>
+                    <div class="quote">
+                        "Formação da Equipa Base de Suporte / Customer Success (CS)"
+                    </div>
+                    <p style="margin-top: 0.7rem;">"Formação" neste contexto é <strong>constituição e montagem da equipe</strong>, não treinamento. A equipe de CS está prevista no Mês 3 — exatamente antes do Soft Launch do Mês 4, conforme a sequência lógica correta.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORIA 2: LACUNAS REAIS -->
+        <section class="fade-in">
+            <div class="section-title"><span class="num num-yellow"><i class="fa-solid fa-check" style="font-size:0.8rem"></i></span> Categoria 2 — Lacunas Genuínas a Incorporar</div>
+            <p class="section-desc">Pontos onde o consultor identifica ausências reais no planejamento. Contribuições válidas que devem ser adendos ao cronograma.</p>
+
+            <!-- 2.1 -->
+            <div class="valid-card">
+                <div class="priority-tag priority-high">🔴 Alta Prioridade</div>
+                <h3><i class="fa-solid fa-triangle-exclamation" style="color: var(--danger); margin-right: 0.5rem;"></i> Plano de Contingência para Débito Técnico Grave</h3>
+                <p class="gap-text">
+                    O cronograma assume que a auditoria do Mês 1 gerará uma lista de correções executáveis em 4 semanas (Mês 2). Entretanto, não há protocolo definido para o cenário adverso: <strong>e se o código-fonte for estruturalmente inviável?</strong> As perguntas críticas sem resposta são:
+                </p>
+                <ul>
+                    <li>Quem absorve o custo de uma refatoração profunda — Eduardo, a fábrica de software ou o budget do projeto?</li>
+                    <li>O cronograma inteiro desliza ou existe um "plano B" paralelo?</li>
+                    <li>Existe cláusula contratual com a fábrica que cobre retrabalho por débito técnico?</li>
+                </ul>
+                <div class="rec-box" style="margin-top: 1rem;">
+                    <div class="rec-label">💡 Recomendação de Incorporação</div>
+                    <p>A auditoria do Mês 1 deve produzir um relatório com <strong>3 vereditos possíveis</strong>: (A) Aprovado para produção, (B) Correções pontuais executáveis no Mês 2, (C) Débito técnico crítico — protocolo de contingência ativado. Somente o veredito C aciona um procedimento pré-acordado com budget e responsável definidos antes do início do projeto.</p>
+                </div>
+            </div>
+
+            <!-- 2.2 -->
+            <div class="valid-card">
+                <div class="priority-tag priority-high">🔴 Alta Prioridade</div>
+                <h3><i class="fa-solid fa-gavel" style="color: var(--warning); margin-right: 0.5rem;"></i> Auditoria como Alavanca Jurídica e Escudo de Caixa</h3>
+                <p class="gap-text">
+                    O cronograma trata a auditoria como um check técnico. O consultor propõe um reposicionamento inteligente: usar o <strong>relatório de auditoria como instrumento de negociação</strong> com a fábrica de software. Este ponto não consta no plano e tem alto impacto com custo zero de implementação.
+                </p>
+                <ul>
+                    <li>Se o relatório aponta falhas graves, ele vira evidência documental para exigir retrabalho sem custo adicional</li>
+                    <li>Cria poder de barganha antes da liberação de qualquer pagamento residual à fábrica</li>
+                    <li>Gera documentação para uso jurídico em caso de litígio contratual</li>
+                </ul>
+                <div class="rec-box" style="margin-top: 1rem;">
+                    <div class="rec-label">💡 Recomendação de Incorporação</div>
+                    <p>Incluir cláusula no contrato com a fábrica estabelecendo o <strong>relatório de auditoria como pré-requisito</strong> para liberação de pagamentos pendentes. A Dra. Viviane deve revisar ou redigir esta cláusula no Mês 1, em paralelo com a própria auditoria técnica.</p>
+                </div>
+            </div>
+
+            <!-- 2.3 -->
+            <div class="valid-card">
+                <div class="priority-tag priority-med">🟡 Média Prioridade</div>
+                <h3><i class="fa-solid fa-bullhorn" style="color: var(--warning); margin-right: 0.5rem;"></i> ODR como Motor de Marketing, não apenas Trilha Jurídica</h3>
+                <p class="gap-text">
+                    O cronograma posiciona a estruturação do ODR (Resolução Online de Disputas) exclusivamente na trilha legal do Mês 3. O consultor identifica corretamente que <strong>em marketplaces, a confiança é o maior gargalo de adesão</strong> — e o ODR é exatamente o mecanismo que endereça isso. Este insight alinha-se com o BMC do Top Usados, que posiciona "Credibilidade Externa" como pilar central de relacionamento com o mercado.
+                </p>
+                <div class="rec-box" style="margin-top: 1rem;">
+                    <div class="rec-label">💡 Recomendação de Incorporação</div>
+                    <p>O ODR deve aparecer no cronograma em <strong>duas dimensões simultâneas</strong>: (1) como entrega jurídica pela Dra. Viviane, conforme planejado, e (2) como argumento central do pitch para os lojistas beta do Mês 4. O Consultor ODR deve produzir, além do parecer legal, um <strong>material de vendas</strong> que comunique a segurança do mecanismo de resolução para os parceiros B2B.</p>
+                </div>
+            </div>
+
+            <!-- 2.4 -->
+            <div class="valid-card">
+                <div class="priority-tag priority-med">🟡 Média Prioridade</div>
+                <h3><i class="fa-solid fa-chart-pie" style="color: var(--warning); margin-right: 0.5rem;"></i> Matriz de Riscos e Diferencial Competitivo no Pitch Deck</h3>
+                <p class="gap-text">
+                    O cronograma menciona a elaboração do Pitch Deck no Mês 3, mas não especifica seu conteúdo. Para captação de investidores ou parceiros B2B de alto valor, um pitch com apenas projeções financeiras é insuficiente. Faltam dois elementos estratégicos essenciais:
+                </p>
+                <ul>
+                    <li>Análise competitiva documentada: posicionamento do Lokkoo frente às soluções existentes no mercado</li>
+                    <li>Matriz de riscos operacionais e de negócio com respectivos mitigadores</li>
+                    <li>Benchmarks de CAC/LTV do setor para contextualizar as projeções financeiras</li>
+                </ul>
+                <div class="rec-box" style="margin-top: 1rem;">
+                    <div class="rec-label">💡 Recomendação de Incorporação</div>
+                    <p>Definir o escopo mínimo do Pitch Deck no cronograma: projeção financeira 12 meses, análise competitiva, matriz de riscos com mitigadores, cases dos lojistas beta (a serem inseridos no Mês 4) e diferencial competitivo baseado no ODR. O @analyst da equipe ou a própria Live Consultoria pode liderar a seção de mercado e riscos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORIA 3: CONTEXTO AUSENTE -->
+        <section class="fade-in">
+            <div class="section-title"><span class="num num-blue"><i class="fa-solid fa-eye-slash" style="font-size:0.8rem"></i></span> Categoria 3 — Contexto Ausente no Diagnóstico</div>
+            <p class="section-desc">Elementos do alinhamento original que o consultor não tinha acesso, e que enfraquecem ou recontextualizam partes da sua análise.</p>
+
+            <!-- 3.1 -->
+            <div class="context-card">
+                <h3><i class="fa-solid fa-arrows-split-up-and-left" style="color: var(--info); margin-right: 0.5rem;"></i> Relação Lokkoo ↔ Top Usados: dois projetos, um ecossistema</h3>
+                <p class="ctx-text">
+                    O consultor analisou o Lokkoo como um projeto isolado. O BMC do Top Usados deixa claro que <strong>Eduardo opera dois projetos distintos em paralelo</strong> — Top Usados (portal de veículos usados) e Lokkoo (marketplace). Ambos compõem um ecossistema unificado sob a governança da Live Consultoria. O cronograma de 6 meses do Lokkoo foi desenhado levando em conta esse paralelismo — certas decisões de governança, jurídico e ERP servem os dois projetos simultaneamente, o que justifica o peso dado a cada frente.
+                </p>
+                <div class="ctx-box">
+                    <div class="ctx-label">🔗 Impacto no Diagnóstico</div>
+                    <p>Críticas sobre "excesso de estruturação" no Mês 1 perdem sentido quando se entende que a homologação do ERP, a estruturação societária e a auditoria técnica constroem a base legal e operacional de <strong>ambos os projetos</strong>.</p>
+                </div>
+            </div>
+
+            <!-- 3.2 -->
+            <div class="context-card">
+                <h3><i class="fa-solid fa-brain" style="color: var(--info); margin-right: 0.5rem;"></i> O "Paradoxo do Caos" — A Rigidez é Intencional</h3>
+                <p class="ctx-text">
+                    O BMC do Top Usados documenta explicitamente um risco comportamental identificado no onboarding: <em>"Eduardo opera magistralmente no caos, havendo um risco real e vulnerabilidade de dispersão em projetos paralelos."</em> A resposta estratégica foi o <strong>Congelamento do Broker Digital</strong> e o <strong>Pacto de Exclusividade</strong> para os 6 meses de estruturação. O cronograma detalhado e sequenciado mês a mês não é excesso de burocracia — é uma ferramenta de <strong>governança comportamental</strong>, não apenas um roadmap técnico.
+                </p>
+                <div class="ctx-box">
+                    <div class="ctx-label">🔗 Impacto no Diagnóstico</div>
+                    <p>O consultor critica partes da rigidez do cronograma sem saber que essa rigidez foi deliberadamente acordada com o cliente como mecanismo de foco e anti-dispersão.</p>
+                </div>
+            </div>
+
+            <!-- 3.3 -->
+            <div class="context-card">
+                <h3><i class="fa-solid fa-trophy" style="color: var(--info); margin-right: 0.5rem;"></i> ERP como Ativo de Valuation — não apenas ferramenta operacional</h3>
+                <p class="ctx-text">
+                    O BMC posiciona <em>"Auditoria Histórica Impecável (ERP validado)"</em> como um dos <strong>Recursos Principais</strong> do modelo de negócio — ao lado da plataforma tecnológica e do tráfego. O endgame declarado no BMC é a construção de valuation visando um Exit (venda da operação) ou captação Série A em 24 meses. Nesse contexto, a homologação do ERP no Mês 1 não é apenas uma decisão técnico-operacional: ela é a <strong>fundação da narrativa de credibilidade</strong> para os investidores que serão abordados no Mês 5.
+                </p>
+                <div class="ctx-box">
+                    <div class="ctx-label">🔗 Impacto no Diagnóstico</div>
+                    <p>O consultor aborda o ERP como escolha de ferramenta de gestão. O alinhamento original o trata como ativo estratégico de valuation — perspectiva que muda completamente o peso e a urgência dessa decisão.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VEREDICTO FINAL -->
+        <section class="fade-in">
+            <div class="section-title"><span class="num"><i class="fa-solid fa-scale-balanced" style="font-size:0.8rem"></i></span> Veredicto Consolidado</div>
+            <p class="section-desc">Tabela de resposta ponto a ponto para uso direto na reunião com o consultor.</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Apontamento do Consultor</th>
+                            <th>Veredito</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>"Não há fase Beta Fechado"</strong></td>
+                            <td><span class="status status-danger">✗ Incorreto</span></td>
+                            <td>Refutar — Beta Fechado está no Mês 4</td>
+                        </tr>
+                        <tr>
+                            <td><strong>"Execução em cascata, dependência jurídica"</strong></td>
+                            <td><span class="status status-danger">✗ Incorreto</span></td>
+                            <td>Refutar — frentes paralelas desde o Mês 1 (consta no cabeçalho do CSV)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>"TI sem poder de decisão no ERP"</strong></td>
+                            <td><span class="status status-danger">✗ Incorreto</span></td>
+                            <td>Refutar — "Diretoria + TI" especificado no Mês 1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>"Tráfego pago prematuro no Mês 4"</strong></td>
+                            <td><span class="status status-danger">✗ Incorreto</span></td>
+                            <td>Refutar — Mês 4 é setup; ativação explicitamente no Mês 5</td>
+                        </tr>
+                        <tr>
+                            <td><strong>"Sem equipe de CS definida"</strong></td>
+                            <td><span class="status status-danger">✗ Incorreto</span></td>
+                            <td>Refutar — "Formação da Equipa de CS" consta no Mês 3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Plano de contingência para débito técnico grave</strong></td>
+                            <td><span class="status status-warning">✓ Válido</span></td>
+                            <td>Incorporar — Protocolo de 3 vereditos na auditoria do Mês 1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Auditoria como alavanca jurídica / escudo de caixa</strong></td>
+                            <td><span class="status status-warning">✓ Válido</span></td>
+                            <td>Incorporar — Cláusula contratual com a fábrica (Dra. Viviane, Mês 1)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ODR como motor de marketing, não só jurídico</strong></td>
+                            <td><span class="status status-warning">✓ Válido</span></td>
+                            <td>Incorporar — Reposicionar ODR em duas dimensões: legal + vendas B2B</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Matriz de riscos e análise competitiva no Pitch Deck</strong></td>
+                            <td><span class="status status-warning">✓ Válido</span></td>
+                            <td>Incorporar — Detalhar escopo mínimo do Pitch Deck no cronograma</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Contexto Lokkoo ↔ Top Usados</strong></td>
+                            <td><span class="status status-info">ℹ Contexto ausente</span></td>
+                            <td>Apresentar — Ecossistema duplo recontextualiza decisões de peso</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rigidez do cronograma</strong></td>
+                            <td><span class="status status-info">ℹ Contexto ausente</span></td>
+                            <td>Apresentar — Rigidez é deliberada (governança comportamental)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ERP como simples ferramenta de gestão</strong></td>
+                            <td><span class="status status-info">ℹ Contexto ausente</span></td>
+                            <td>Apresentar — ERP é ativo de valuation para Exit/Série A</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verdict-box">
+                <h2>Estratégia Recomendada para a Reunião</h2>
+                <p>
+                    Agradeça a análise e reconheça a profundidade do olhar externo. Em seguida, apresente as <strong>5 refutações com evidência textual direta</strong> — isso demonstra domínio do próprio produto entregue. Finalize adotando os <strong>4 pontos genuinamente válidos</strong> como adendos ao cronograma, posicionando a Live Consultoria como tendo previsto os elementos centrais e absorvendo as contribuições como enriquecimento colaborativo — não como correções. A narrativa correta é: <em>"Construímos bem. Agora afinamos juntos."</em>
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>Protocolo AIOS — Live Consultoria</p>
+        <p class="dev-credit">Documento de Resposta Técnica v1.0 — Março 2026</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.08 });
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        });
+    </script>
+
+</body>
+</html>
